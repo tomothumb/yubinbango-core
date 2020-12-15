@@ -2,7 +2,7 @@ let CACHE = [];
 module YubinBango {
   export class Core {
     URL = 'https://yubinbango.github.io/yubinbango-data/data';
-    REGION: string[] = [
+    REGION: (string | null)[] = [
       null, '北海道', '青森県', '岩手県', '宮城県',
       '秋田県', '山形県', '福島県', '茨城県', '栃木県',
       '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県',
@@ -18,9 +18,9 @@ module YubinBango {
       if(inputVal){
         // 全角の数字を半角に変換 ハイフンが入っていても数字のみの抽出
         const a:string = inputVal.replace(/[０-９]/g, (s: string) => String.fromCharCode(s.charCodeAt(0) - 65248));
-        const b:RegExpMatchArray = a.match(/\d/g);
-        const c:string = b.join('');
-        const yubin7: string = this.chk7(c);
+        const b:RegExpMatchArray|null = a.match(/\d/g);
+        const c:string|null = b?.join('') ?? "";
+        const yubin7: string|null = this.chk7(c) ?? null ;
         // 7桁の数字の時のみ作動
         if (yubin7) {
           this.getAddr(yubin7, callback);
@@ -58,7 +58,7 @@ module YubinBango {
       scriptTag.setAttribute("src", url);
       document.head.appendChild(scriptTag);
     }
-    getAddr(yubin7: string, fn):{[key:string]: string} {
+    getAddr(yubin7: string, fn): {[key:string]: string} | void {
       const yubin3 = yubin7.substr(0, 3);
       // 郵便番号上位3桁でキャッシュデータを確認
       if (yubin3 in CACHE && yubin7 in CACHE[yubin3]) {
@@ -73,4 +73,4 @@ module YubinBango {
   }
 }
 
-export = YubinBango;
+export default YubinBango;
